@@ -98,7 +98,7 @@ impl Tuple {
 
 #[cfg(test)]
 mod tuple_tests {
-    use super::*;
+    use super::{Tuple, equals};
 
     #[test]
     fn subtract_vec() {

@@ -1,7 +1,7 @@
 use self::super::equals;
 
 #[derive(Default, Clone)]
-struct Color {
+pub struct Color {
     pub r: f32,
     pub g: f32,
     pub b: f32,
@@ -46,8 +46,8 @@ impl Color {
 }
 
 #[cfg(test)]
-mod tuple_tests {
-    use super::*;
+mod color_tests{
+    use super::Color;
 
     #[test]
     fn mult_color () {
