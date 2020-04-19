@@ -131,16 +131,45 @@ mod matrix {
     pub fn translation(x: f32, y: f32, z: f32) -> Matrix4 {
         [[1., 0., 0., x], [0., 1., 0., y], [0., 0., 1., z], [0., 0., 0., 1.]]
     }
+
     pub fn scale(x: f32, y: f32, z: f32) -> Matrix4 {
         [[x, 0., 0., 0.], [0., y, 0., 0.], [0., 0., z, 0.], [0., 0., 0., 1.]]
     }
 
+    pub fn rotate_x(rad: f32) -> Matrix4 {
+        [[1., 0., 0., 0.], [0., rad.cos(), -(rad.sin()), 0.], [0., rad.sin(), rad.cos(), 0.], [0., 0., 0., 1.]]
+    }
+
+    pub fn rotate_y(rad: f32) -> Matrix4 {
+        [[rad.cos(), 0., rad.sin(), 0.], [0., 1., 0., 0.], [-(rad.sin()), 0., rad.cos(), 0.], [0., 0., 0., 1.]]
+    }
+
+    pub fn rotate_z(rad: f32) -> Matrix4 {
+        [[rad.cos(), -(rad.sin()), 0., 0.], [rad.sin(), rad.cos(), 0., 0.], [0., 0., 1., 0.], [0., 0., 0., 1.]]
+    }
+
+    pub fn shear(x_y: f32, x_z: f32, y_x: f32, y_z: f32, z_x: f32, z_y: f32) -> Matrix4 {
+        [[1., x_y, x_z, 0.], [y_x, 1., y_z, 0.], [z_x, z_y, 1., 0.], [0., 0., 0., 1.]]
+    }
+
+    pub fn chain(ms: Vec<Matrix4>) -> Matrix4 {
+        if ms.len() == 1 {
+            ms[0]
+        } else {
+            let mut m = M4::I;
+            for i in 0..ms.len() {
+                m = M4::mm(ms[i], m);
+            }
+            m
+        }
+    }
 }
 
 #[cfg(test)]
 mod matrix_tests {
     use self::super::matrix::*;
     use crate::tuple::Tuple;
+    use std::f32::consts::PI;
 
     #[test]
     fn eq() {
@@ -247,5 +276,60 @@ mod matrix_tests {
         let a = scale(-1., 1., 1.);
         let t = Tuple::point(-4., 6., 8.);
         assert!(Tuple::point(4., 6., 8.).eq(&M4::dot_tuple(a, t.clone())));
+    }
+
+    #[test]
+    fn rot() {
+        let a = Tuple::point(0., 1., 0.);
+        let half_quarter = rotate_x(PI / 4.);
+        let full_quarter = rotate_x(PI / 2.);
+        let root_2 = (2. as f32).sqrt();
+        assert!(M4::dot_tuple(half_quarter, a.clone())
+            .eq(&Tuple::point(0., root_2 / 2., root_2 / 2.)));
+        assert!(M4::dot_tuple(full_quarter, a)
+            .eq(&Tuple::point(0., 0., 1.)));
+
+        let a = Tuple::point(0., 0., 1.);
+        let half_quarter = rotate_y(PI / 4.);
+        let full_quarter = rotate_y(PI / 2.);
+        assert!(M4::dot_tuple(half_quarter, a.clone())
+            .eq(&Tuple::point(root_2 / 2., 0., root_2 / 2.)));
+        assert!(M4::dot_tuple(full_quarter, a)
+            .eq(&Tuple::point(1., 0., 0.)));
+
+        let a = Tuple::point(0., 1., 0.);
+        let half_quarter = rotate_z(PI / 4.);
+        let full_quarter = rotate_z(PI / 2.);
+        assert!(M4::dot_tuple(half_quarter, a.clone())
+            .eq(&Tuple::point(-root_2 / 2., root_2 / 2., 0.)));
+        assert!(M4::dot_tuple(full_quarter, a)
+            .eq(&Tuple::point(-1., 0., 0.)));
+    }
+
+    #[test]
+    fn shear_test() {
+        let a = Tuple::point(2., 3., 4.);
+        let s = shear(1., 0., 0., 0., 0., 0.);
+        assert!(M4::dot_tuple(s, a.clone())
+            .eq(&Tuple::point(5., 3., 4.)));
+        let s = shear(-1., 0., 0., 2., 0., 0.5);
+        assert!(M4::dot_tuple(s, a)
+            .eq(&Tuple::point(-1., 11., 5.5)));
+    }
+
+    #[test]
+    fn chain_test() {
+        let p = Tuple::point(1., 0., 1.);
+        let a = rotate_x(PI / 2.);
+        let b = scale(5., 5., 5.);
+        let c = translation(10., 5., 7.);
+        let p2 = M4::dot_tuple(a.clone(), p.clone());
+        assert!(p2.eq(&Tuple::point(1., -1., 0.)));
+        let p3 = M4::dot_tuple(b.clone(), p2);
+        assert!(p3.eq(&Tuple::point(5., -5., 0.)));
+        let p4 = M4::dot_tuple(c.clone(), p3);
+        assert!(p4.eq(&Tuple::point(15., 0., 7.)));
+        let t = chain(vec![a, b, c]);
+        assert!(p4.eq(&M4::dot_tuple(t, p)));
     }
 }
