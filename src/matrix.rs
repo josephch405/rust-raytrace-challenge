@@ -1,4 +1,4 @@
-mod matrix {
+pub mod matrix {
     use std::cmp::{max, min};
     use crate::equals;
     use crate::tuple::Tuple;

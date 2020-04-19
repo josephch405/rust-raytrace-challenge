@@ -38,6 +38,9 @@ impl Tuple {
             w: 1.0,
         }
     }
+    pub fn as_vector(&self) -> Tuple {
+        Tuple {x: self.x, y: self.y, z: self.z, w: 0.}
+    }
     pub fn add(&self, other: Tuple) -> Tuple {
         Tuple {
             x: self.x + other.x,
