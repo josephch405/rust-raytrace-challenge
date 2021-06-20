@@ -1,7 +1,7 @@
 pub mod matrix {
-    use std::cmp::{max, min};
     use crate::equals;
     use crate::tuple::Tuple;
+    use std::cmp::{max, min};
 
     pub type Matrix2 = [[f32; 2]; 2];
     pub type Matrix3 = [[f32; 3]; 3];
@@ -13,7 +13,12 @@ pub mod matrix {
         v
     }
 
-    const I4: Matrix4 = [[1., 0., 0., 0.], [0., 1., 0., 0.], [0., 0., 1., 0.], [0., 0., 0., 1.]];
+    const I4: Matrix4 = [
+        [1., 0., 0., 0.],
+        [0., 1., 0., 0.],
+        [0., 0., 1., 0.],
+        [0., 0., 0., 1.],
+    ];
 
     pub struct M2 {}
 
@@ -30,10 +35,14 @@ pub mod matrix {
             let row_i = max(0, min(row, 2)) as usize;
             let col_j = max(0, min(col, 2)) as usize;
             let row_vecs = remove_idx(m.to_vec(), row_i);
-            let row_vecs: Vec<Vec<f32>> = row_vecs.iter()
+            let row_vecs: Vec<Vec<f32>> = row_vecs
+                .iter()
                 .map(|col| remove_idx(col.to_vec(), col_j))
                 .collect();
-            [[row_vecs[0][0], row_vecs[0][1]], [row_vecs[1][0], row_vecs[1][1]], ]
+            [
+                [row_vecs[0][0], row_vecs[0][1]],
+                [row_vecs[1][0], row_vecs[1][1]],
+            ]
         }
         pub fn minor(m: Matrix3, row: i32, col: i32) -> f32 {
             let sub_m = M3::sub(m, row, col);
@@ -78,7 +87,8 @@ pub mod matrix {
             let row_i = max(0, min(row, 3)) as usize;
             let col_j = max(0, min(col, 3)) as usize;
             let row_vecs = remove_idx(m.to_vec(), row_i);
-            let row_vecs: Vec<Vec<f32>> = row_vecs.iter()
+            let row_vecs: Vec<Vec<f32>> = row_vecs
+                .iter()
                 .map(|col| remove_idx(col.to_vec(), col_j))
                 .collect();
             [
@@ -115,10 +125,15 @@ pub mod matrix {
             result
         }
         pub fn eq(a: Matrix4, b: Matrix4) -> bool {
-            (0..16).map(|i| equals(a[i / 4][i % 4], b[i / 4][i % 4])).all(|x| x)
+            (0..16)
+                .map(|i| equals(a[i / 4][i % 4], b[i / 4][i % 4]))
+                .all(|x| x)
         }
         pub fn dot_tuple(m: Matrix4, t: Tuple) -> Tuple {
-            let r: Vec<f32> = m.iter().map(|row| row[0] * t.x + row[1] * t.y + row[2] * t.z + row[3] * t.w).collect();
+            let r: Vec<f32> = m
+                .iter()
+                .map(|row| row[0] * t.x + row[1] * t.y + row[2] * t.z + row[3] * t.w)
+                .collect();
             Tuple {
                 x: r[0],
                 y: r[1],
@@ -129,27 +144,57 @@ pub mod matrix {
     }
 
     pub fn translation(x: f32, y: f32, z: f32) -> Matrix4 {
-        [[1., 0., 0., x], [0., 1., 0., y], [0., 0., 1., z], [0., 0., 0., 1.]]
+        [
+            [1., 0., 0., x],
+            [0., 1., 0., y],
+            [0., 0., 1., z],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn scale(x: f32, y: f32, z: f32) -> Matrix4 {
-        [[x, 0., 0., 0.], [0., y, 0., 0.], [0., 0., z, 0.], [0., 0., 0., 1.]]
+        [
+            [x, 0., 0., 0.],
+            [0., y, 0., 0.],
+            [0., 0., z, 0.],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn rotate_x(rad: f32) -> Matrix4 {
-        [[1., 0., 0., 0.], [0., rad.cos(), -(rad.sin()), 0.], [0., rad.sin(), rad.cos(), 0.], [0., 0., 0., 1.]]
+        [
+            [1., 0., 0., 0.],
+            [0., rad.cos(), -(rad.sin()), 0.],
+            [0., rad.sin(), rad.cos(), 0.],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn rotate_y(rad: f32) -> Matrix4 {
-        [[rad.cos(), 0., rad.sin(), 0.], [0., 1., 0., 0.], [-(rad.sin()), 0., rad.cos(), 0.], [0., 0., 0., 1.]]
+        [
+            [rad.cos(), 0., rad.sin(), 0.],
+            [0., 1., 0., 0.],
+            [-(rad.sin()), 0., rad.cos(), 0.],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn rotate_z(rad: f32) -> Matrix4 {
-        [[rad.cos(), -(rad.sin()), 0., 0.], [rad.sin(), rad.cos(), 0., 0.], [0., 0., 1., 0.], [0., 0., 0., 1.]]
+        [
+            [rad.cos(), -(rad.sin()), 0., 0.],
+            [rad.sin(), rad.cos(), 0., 0.],
+            [0., 0., 1., 0.],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn shear(x_y: f32, x_z: f32, y_x: f32, y_z: f32, z_x: f32, z_y: f32) -> Matrix4 {
-        [[1., x_y, x_z, 0.], [y_x, 1., y_z, 0.], [z_x, z_y, 1., 0.], [0., 0., 0., 1.]]
+        [
+            [1., x_y, x_z, 0.],
+            [y_x, 1., y_z, 0.],
+            [z_x, z_y, 1., 0.],
+            [0., 0., 0., 1.],
+        ]
     }
 
     pub fn chain(ms: Vec<Matrix4>) -> Matrix4 {
@@ -173,36 +218,86 @@ mod matrix_tests {
 
     #[test]
     fn eq() {
-        let a: Matrix4 = [[1., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
-        let b: Matrix4 = [[1., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
+        let a: Matrix4 = [
+            [1., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
+        let b: Matrix4 = [
+            [1., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
         assert_eq!(a, b)
     }
 
     #[test]
     fn dne() {
-        let a: Matrix4 = [[1., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
-        let b: Matrix4 = [[2., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
+        let a: Matrix4 = [
+            [1., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
+        let b: Matrix4 = [
+            [2., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
         assert_ne!(a, b)
     }
 
     #[test]
     fn mm4_test() {
-        let a: Matrix4 = [[1., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
-        let b: Matrix4 = [[-2., 1., 2., 3.], [3., 2., 1., -1.], [4., 3., 6., 5.], [1., 2., 7., 8.]];
-        let c: Matrix4 = [[20., 22., 50., 48.], [44., 54., 114., 108.], [40., 58., 110., 102.], [16., 26., 46., 42.]];
+        let a: Matrix4 = [
+            [1., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
+        let b: Matrix4 = [
+            [-2., 1., 2., 3.],
+            [3., 2., 1., -1.],
+            [4., 3., 6., 5.],
+            [1., 2., 7., 8.],
+        ];
+        let c: Matrix4 = [
+            [20., 22., 50., 48.],
+            [44., 54., 114., 108.],
+            [40., 58., 110., 102.],
+            [16., 26., 46., 42.],
+        ];
         assert_eq!(M4::mm(a, b), c)
     }
 
     #[test]
     fn id_test() {
-        let a: Matrix4 = [[1., 2., 3., 4.], [5., 6., 7., 8.], [9., 8., 7., 6.], [5., 4., 3., 2.]];
+        let a: Matrix4 = [
+            [1., 2., 3., 4.],
+            [5., 6., 7., 8.],
+            [9., 8., 7., 6.],
+            [5., 4., 3., 2.],
+        ];
         assert_eq!(a, M4::mm(a, M4::I))
     }
 
     #[test]
     fn transpose() {
-        let a: Matrix4 = [[0., 9., 3., 0.], [9., 8., 0., 8.], [1., 8., 5., 3.], [0., 0., 5., 8.]];
-        let b: Matrix4 = [[0., 9., 1., 0.], [9., 8., 8., 0.], [3., 0., 5., 5.], [0., 8., 3., 8.]];
+        let a: Matrix4 = [
+            [0., 9., 3., 0.],
+            [9., 8., 0., 8.],
+            [1., 8., 5., 3.],
+            [0., 0., 5., 8.],
+        ];
+        let b: Matrix4 = [
+            [0., 9., 1., 0.],
+            [9., 8., 8., 0.],
+            [3., 0., 5., 5.],
+            [0., 8., 3., 8.],
+        ];
         assert_eq!(M4::t(a), b);
         assert_eq!(M4::t(M4::I), M4::I)
     }
@@ -213,13 +308,23 @@ mod matrix_tests {
         assert_eq!(M2::det(a), 17.);
         let b: Matrix3 = [[1., 2., 6.], [-5., 8., -4.], [2., 6., 4.]];
         assert_eq!(M3::det(b), -196.);
-        let c: Matrix4 = [[-2., -8., 3., 5.], [-3., 1., 7., 3.], [1., 2., -9., 6.], [-6., 7., 7., -9.]];
+        let c: Matrix4 = [
+            [-2., -8., 3., 5.],
+            [-3., 1., 7., 3.],
+            [1., 2., -9., 6.],
+            [-6., 7., 7., -9.],
+        ];
         assert_eq!(M4::det(c), -4071.);
     }
 
     #[test]
     fn sub() {
-        let a: Matrix4 = [[0., 9., 3., 0.], [9., 8., 0., 8.], [1., 8., 5., 3.], [0., 0., 5., 8.]];
+        let a: Matrix4 = [
+            [0., 9., 3., 0.],
+            [9., 8., 0., 8.],
+            [1., 8., 5., 3.],
+            [0., 0., 5., 8.],
+        ];
         let b: Matrix3 = [[0., 3., 0.], [9., 0., 8.], [0., 5., 8.]];
         assert_eq!(M4::sub(a, 2, 1), b);
         let c: Matrix2 = [[9., 0.], [0., 5.]];
@@ -243,8 +348,18 @@ mod matrix_tests {
 
     #[test]
     fn inverse() {
-        let a: Matrix4 = [[0., 9., 3., 0.], [9., 8., 0., 8.], [1., 8., 5., 3.], [0., 0., 5., 8.]];
-        let b: Matrix4 = [[-2., -8., 3., 5.], [-3., 1., 7., 3.], [1., 2., -9., 6.], [-6., 7., 7., -9.]];
+        let a: Matrix4 = [
+            [0., 9., 3., 0.],
+            [9., 8., 0., 8.],
+            [1., 8., 5., 3.],
+            [0., 0., 5., 8.],
+        ];
+        let b: Matrix4 = [
+            [-2., -8., 3., 5.],
+            [-3., 1., 7., 3.],
+            [1., 2., -9., 6.],
+            [-6., 7., 7., -9.],
+        ];
         let c = M4::mm(a, b);
         assert!(M4::eq(M4::mm(c, M4::invert(b)), a));
     }
@@ -284,37 +399,41 @@ mod matrix_tests {
         let half_quarter = rotate_x(PI / 4.);
         let full_quarter = rotate_x(PI / 2.);
         let root_2 = (2. as f32).sqrt();
-        assert!(M4::dot_tuple(half_quarter, a.clone())
-            .eq(&Tuple::point(0., root_2 / 2., root_2 / 2.)));
-        assert!(M4::dot_tuple(full_quarter, a)
-            .eq(&Tuple::point(0., 0., 1.)));
+        assert!(M4::dot_tuple(half_quarter, a.clone()).eq(&Tuple::point(
+            0.,
+            root_2 / 2.,
+            root_2 / 2.
+        )));
+        assert!(M4::dot_tuple(full_quarter, a).eq(&Tuple::point(0., 0., 1.)));
 
         let a = Tuple::point(0., 0., 1.);
         let half_quarter = rotate_y(PI / 4.);
         let full_quarter = rotate_y(PI / 2.);
-        assert!(M4::dot_tuple(half_quarter, a.clone())
-            .eq(&Tuple::point(root_2 / 2., 0., root_2 / 2.)));
-        assert!(M4::dot_tuple(full_quarter, a)
-            .eq(&Tuple::point(1., 0., 0.)));
+        assert!(M4::dot_tuple(half_quarter, a.clone()).eq(&Tuple::point(
+            root_2 / 2.,
+            0.,
+            root_2 / 2.
+        )));
+        assert!(M4::dot_tuple(full_quarter, a).eq(&Tuple::point(1., 0., 0.)));
 
         let a = Tuple::point(0., 1., 0.);
         let half_quarter = rotate_z(PI / 4.);
         let full_quarter = rotate_z(PI / 2.);
-        assert!(M4::dot_tuple(half_quarter, a.clone())
-            .eq(&Tuple::point(-root_2 / 2., root_2 / 2., 0.)));
-        assert!(M4::dot_tuple(full_quarter, a)
-            .eq(&Tuple::point(-1., 0., 0.)));
+        assert!(M4::dot_tuple(half_quarter, a.clone()).eq(&Tuple::point(
+            -root_2 / 2.,
+            root_2 / 2.,
+            0.
+        )));
+        assert!(M4::dot_tuple(full_quarter, a).eq(&Tuple::point(-1., 0., 0.)));
     }
 
     #[test]
     fn shear_test() {
         let a = Tuple::point(2., 3., 4.);
         let s = shear(1., 0., 0., 0., 0., 0.);
-        assert!(M4::dot_tuple(s, a.clone())
-            .eq(&Tuple::point(5., 3., 4.)));
+        assert!(M4::dot_tuple(s, a.clone()).eq(&Tuple::point(5., 3., 4.)));
         let s = shear(-1., 0., 0., 2., 0., 0.5);
-        assert!(M4::dot_tuple(s, a)
-            .eq(&Tuple::point(-1., 11., 5.5)));
+        assert!(M4::dot_tuple(s, a).eq(&Tuple::point(-1., 11., 5.5)));
     }
 
     #[test]

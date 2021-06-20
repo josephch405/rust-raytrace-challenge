@@ -10,8 +10,10 @@ pub struct Tuple {
 
 impl PartialEq for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
-        equals(self.x, other.x) && equals(self.y, other.y) &&
-            equals(self.z, other.z) && equals(self.w, other.w)
+        equals(self.x, other.x)
+            && equals(self.y, other.y)
+            && equals(self.z, other.z)
+            && equals(self.w, other.w)
     }
 }
 
@@ -23,23 +25,18 @@ impl Tuple {
         equals(self.w, 0.0)
     }
     pub fn vector(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple {
-            x,
-            y,
-            z,
-            w: 0.0,
-        }
+        Tuple { x, y, z, w: 0.0 }
     }
     pub fn point(x: f32, y: f32, z: f32) -> Tuple {
-        Tuple {
-            x,
-            y,
-            z,
-            w: 1.0,
-        }
+        Tuple { x, y, z, w: 1.0 }
     }
     pub fn as_vector(&self) -> Tuple {
-        Tuple {x: self.x, y: self.y, z: self.z, w: 0.}
+        Tuple {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+            w: 0.,
+        }
     }
     pub fn add(&self, other: Tuple) -> Tuple {
         Tuple {
@@ -86,22 +83,28 @@ impl Tuple {
     }
     pub fn unit(&self) -> Tuple {
         let n = self.norm();
-        Tuple { x: self.x / n, y: self.y / n, z: self.z / n, w: self.w / n }
+        Tuple {
+            x: self.x / n,
+            y: self.y / n,
+            z: self.z / n,
+            w: self.w / n,
+        }
     }
     pub fn dot(&self, other: Tuple) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
     }
     pub fn cross(&self, other: Tuple) -> Tuple {
-        Tuple::vector(self.y * other.z - self.z * other.y,
-                      self.z * other.x - self.x * other.z,
-                      self.x * other.y - self.y * other.x,
+        Tuple::vector(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
         )
     }
 }
 
 #[cfg(test)]
 mod tuple_tests {
-    use super::{Tuple, equals};
+    use super::{equals, Tuple};
 
     #[test]
     fn subtract_vec() {

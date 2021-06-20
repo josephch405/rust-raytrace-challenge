@@ -1,5 +1,5 @@
-use crate::tuple::Tuple;
 use crate::matrix::matrix;
+use crate::tuple::Tuple;
 
 #[derive(Clone)]
 pub struct Ray {
@@ -10,10 +10,7 @@ pub struct Ray {
 pub fn ray(origin: Tuple, direction: Tuple) -> Ray {
     assert!(origin.is_point());
     assert!(direction.is_vector());
-    Ray {
-        origin,
-        direction,
-    }
+    Ray { origin, direction }
 }
 
 impl Ray {
@@ -23,16 +20,16 @@ impl Ray {
     pub fn transform(&self, m: matrix::Matrix4) -> Ray {
         Ray {
             origin: matrix::M4::dot_tuple(m, self.origin.clone()),
-            direction: matrix::M4::dot_tuple(m, self.direction.clone())
+            direction: matrix::M4::dot_tuple(m, self.direction.clone()),
         }
     }
 }
 
 #[cfg(test)]
 mod matrix_tests {
+    use crate::matrix::matrix::{scale, translation};
     use crate::ray::ray;
     use crate::tuple::Tuple;
-    use crate::matrix::matrix::{translation, scale};
 
     #[test]
     fn ray_test() {
@@ -44,7 +41,7 @@ mod matrix_tests {
     }
 
     #[test]
-    fn ray_translate () {
+    fn ray_translate() {
         let r1 = ray(Tuple::point(1., 2., 3.), Tuple::vector(0., 1., 0.));
         let m = translation(3., 4., 5.);
         let r2 = r1.transform(m);
@@ -53,7 +50,7 @@ mod matrix_tests {
     }
 
     #[test]
-    fn ray_scale () {
+    fn ray_scale() {
         let r1 = ray(Tuple::point(1., 2., 3.), Tuple::vector(0., 1., 0.));
         let m = scale(2., 3., 4.);
         let r2 = r1.transform(m);

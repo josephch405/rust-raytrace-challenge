@@ -9,8 +9,7 @@ pub struct Color {
 
 impl PartialEq for Color {
     fn eq(&self, other: &Color) -> bool {
-        equals(self.r, other.r) && equals(self.g, other.g) &&
-            equals(self.b, other.b)
+        equals(self.r, other.r) && equals(self.g, other.g) && equals(self.b, other.b)
     }
 }
 
@@ -46,14 +45,26 @@ impl Color {
 }
 
 #[cfg(test)]
-mod color_tests{
+mod color_tests {
     use super::Color;
 
     #[test]
-    fn mult_color () {
-        let a = Color {r: 1.0, g: 0.2, b: 0.4};
-        let b = Color {r: 0.9, g: 1.0, b: 0.1};
-        let c = Color {r: 0.9, g: 0.2, b: 0.04};
+    fn mult_color() {
+        let a = Color {
+            r: 1.0,
+            g: 0.2,
+            b: 0.4,
+        };
+        let b = Color {
+            r: 0.9,
+            g: 1.0,
+            b: 0.1,
+        };
+        let c = Color {
+            r: 0.9,
+            g: 0.2,
+            b: 0.04,
+        };
         assert!(a.multiply_color(b) == c)
     }
 }

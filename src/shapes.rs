@@ -1,7 +1,7 @@
+use crate::matrix::matrix::{Matrix4, M4};
 use crate::ray::Ray;
 use crate::tuple::Tuple;
 use std::sync::atomic::{AtomicIsize, Ordering};
-use crate::matrix::matrix::{Matrix4, M4};
 
 pub trait Shape {
     fn intersects(&self, t: Ray) -> Vec<Intersection>;
@@ -16,16 +16,16 @@ pub struct Sphere {
 }
 
 pub fn sphere_unit() -> Sphere {
-    Sphere{
+    Sphere {
         id: _MAX_SHAPE_ID.fetch_add(1, Ordering::SeqCst),
-        transform: M4::I
+        transform: M4::I,
     }
 }
 
 pub fn sphere(transform: Matrix4) -> Sphere {
     Sphere {
         id: _MAX_SHAPE_ID.fetch_add(1, Ordering::SeqCst),
-        transform
+        transform,
     }
 }
 
@@ -43,13 +43,16 @@ impl Shape for Sphere {
         if d < 0. {
             vec![]
         } else {
-            vec![Intersection {
-                t: (-b - d.sqrt()) / (2. * a),
-                object: self,
-            }, Intersection {
-                t: (-b + d.sqrt()) / (2. * a),
-                object: self,
-            }]
+            vec![
+                Intersection {
+                    t: (-b - d.sqrt()) / (2. * a),
+                    object: self,
+                },
+                Intersection {
+                    t: (-b + d.sqrt()) / (2. * a),
+                    object: self,
+                },
+            ]
         }
     }
     fn id(&self) -> isize {
@@ -82,11 +85,11 @@ pub fn hit(intersections: Vec<Intersection>) -> Option<Intersection> {
 
 #[cfg(test)]
 mod sphere_tests {
-    use crate::tuple::Tuple;
-    use crate::shapes;
-    use crate::shapes::{Shape, Intersection, hit};
-    use crate::ray::ray;
     use crate::matrix::matrix::{scale, translation};
+    use crate::ray::ray;
+    use crate::shapes;
+    use crate::shapes::{hit, Intersection, Shape};
+    use crate::tuple::Tuple;
 
     #[test]
     fn sphere_test_1() {
@@ -154,7 +157,10 @@ mod sphere_tests {
         let i2 = Intersection { t: 2., object: &s };
         assert_eq!(i1.t, hit(vec![i2, i1.clone()]).expect("should exist").t);
         let i2 = Intersection { t: -1., object: &s };
-        assert_eq!(i1.t, hit(vec![i2.clone(), i1.clone()]).expect("should exist").t);
+        assert_eq!(
+            i1.t,
+            hit(vec![i2.clone(), i1.clone()]).expect("should exist").t
+        );
         let i1 = Intersection { t: -2., object: &s };
         assert!(hit(vec![i2, i1]).is_none());
 
@@ -162,7 +168,10 @@ mod sphere_tests {
         let i2 = Intersection { t: 7., object: &s };
         let i3 = Intersection { t: -3., object: &s };
         let i4 = Intersection { t: 2., object: &s };
-        assert_eq!(i4.t, hit(vec![i1, i2, i3, i4.clone()]).expect("should exist").t);
+        assert_eq!(
+            i4.t,
+            hit(vec![i1, i2, i3, i4.clone()]).expect("should exist").t
+        );
     }
 
     #[test]
@@ -183,4 +192,3 @@ mod sphere_tests {
         assert_eq!(x.len(), 0);
     }
 }
-
